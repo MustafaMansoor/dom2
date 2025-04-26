@@ -1,0 +1,42 @@
+services:
+
+  domserver:
+    image: domjudge/domserver:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: abc
+      MYSQL_PASSWORD: abc
+      MYSQL_DATABASE: abc
+      MYSQL_USER: abc
+      MYSQL_HOST: db
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "8080:80"
+  judgehost-0:
+    image: domjudge/judgehost:latest
+    hostname: judgedaemon-0
+    privileged: true
+    environment:
+      DAEMON_ID: 0
+      JUDGEDAEMON_PASSWORD: abc
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup
+    restart: always
+    depends_on:
+      - domserver
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: abc
+      MYSQL_DATABASE: domjudgeicpc
+      MYSQL_USER: abc
+      MYSQL_PASSWORD: abc
+    restart: always
+    volumes:
+      - data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  data:
